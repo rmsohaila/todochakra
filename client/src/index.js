@@ -1,6 +1,8 @@
-import { ColorModeScript } from '@chakra-ui/react';
 import React, { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
+import { QueryClientProvider, QueryClient } from 'react-query';
+import { RecoilRoot } from 'recoil';
+import { ColorModeScript } from '@chakra-ui/react';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
@@ -8,11 +10,16 @@ import * as serviceWorker from './serviceWorker';
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 
+const queryClient = new QueryClient();
 root.render(
-  <StrictMode>
-    <ColorModeScript />
-    <App />
-  </StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <RecoilRoot>
+      <StrictMode>
+        <ColorModeScript />
+        <App />
+      </StrictMode>
+    </RecoilRoot>
+  </QueryClientProvider>
 );
 
 // If you want your app to work offline and load faster, you can change
