@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Cors;
 
 namespace EdwardTodoAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     [EnableCors("AllowAll")]
+    [ApiController]
+    [Route("api/[controller]")]
     public class TasksController : ControllerBase
     {
         private readonly SQLDBContext _context;

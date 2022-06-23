@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-  useSetRecoilValue,
-} from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   Box,
   Heading,
@@ -14,19 +9,21 @@ import {
   Switch,
   HStack,
 } from '@chakra-ui/react';
-import TodoListItem from './todolistitem';
 import {
   taskForEditState,
   filteredTasks,
   filterState,
   taskListStatsState,
-} from 'utils/atoms';
+} from 'utils';
+import { TodoListItem } from 'components';
+import { useIsFetching } from 'react-query';
 
-function ToDoList() {
+export const TodoList = () => {
   const [filter, setFilter] = useRecoilState(filterState);
   const setTaskForEdit = useSetRecoilState(taskForEditState);
   const taskListStats = useRecoilValue(taskListStatsState);
   const [tasks, setTasks] = useRecoilState(filteredTasks);
+  const isLoading = useIsFetching();
 
   const onEditHandler = task => {
     if (!task) return;
@@ -39,19 +36,18 @@ function ToDoList() {
 
   const showCompletedTasks = () => {
     return filter === 'all' ? setFilter('completed') : setFilter('all');
-
   };
 
   return (
     <Box as="div" p="5">
       <Flex>
         <Heading my="2">Task List</Heading>
-
         <Spacer />
-
         <HStack>
           <Box>
-            {filter === 'all' && <Text>({taskListStats.totalTasks} tasks)</Text>}
+            {filter === 'all' && (
+              <Text>({taskListStats.totalTasks} tasks)</Text>
+            )}
             {filter === 'completed' && (
               <Text>({taskListStats.totalCompleted} completed)</Text>
             )}
@@ -70,13 +66,16 @@ function ToDoList() {
         </Box>
       </Flex>
       {/* Content Rows */}
-      {tasks.length === 0 && <Text>No tasks</Text>}
-      {tasks &&
+
+      {isLoading > 0 && <Text align="center">Working...</Text>}
+      {!isLoading && tasks.length === 0 && <Text align="center">No tasks</Text>}
+      {!isLoading &&
+        tasks &&
         tasks.length > 0 &&
-        tasks.map(t => {
+        tasks.map((t, i) => {
           return (
             <TodoListItem
-              key={t.id}
+              key={i}
               task={t}
               onEdit={onEditHandler}
               onDelete={onDeleteHandler}
@@ -85,6 +84,4 @@ function ToDoList() {
         })}
     </Box>
   );
-}
-
-export default ToDoList;
+};

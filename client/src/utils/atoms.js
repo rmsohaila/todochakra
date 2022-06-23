@@ -1,5 +1,10 @@
 import { atom, selector } from 'recoil';
 
+export const statusState = atom({
+  key: 'statuses',
+  default: [],
+});
+
 export const filterState = atom({
   key: 'filter',
   default: 'all',

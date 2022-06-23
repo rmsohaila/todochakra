@@ -1,4 +1,4 @@
-import api from 'utils/api';
+import { api } from 'utils';
 
 const TASK_URL = '/tasks';
 export const getTasks = async () => {

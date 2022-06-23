@@ -1,33 +1,30 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ChakraProvider, Flex } from '@chakra-ui/react';
 import { useSetRecoilState } from 'recoil';
-import { tasksListState } from './utils/atoms';
-import ToDoList from './components/todolist';
-import AddToDo from './components/addtodo';
-import { ColorModeSwitcher } from './ColorModeSwitcher';
-import { getTasks } from 'api/todo.service';
 import { useQuery } from 'react-query';
+import { ColorModeSwitcher } from './ColorModeSwitcher';
+
+import { tasksListState, statusState } from 'utils';
+import { getTasks, getStatuses } from 'api';
+import { AddToDo, TodoList } from 'components';
 
 export function App() {
+  const setStatuses = useSetRecoilState(statusState);
   const setTasks = useSetRecoilState(tasksListState);
-  const [data, isLoading] = useQuery('books', getTasks);
-console.log(data);
-  if (isLoading) {
-    return 'Loading tasks...';
-  }
-  // useEffect(() => {
-  //   getTasks().then(tasks => {
-  //     setTasks([...tasks.data]);
-  //   });
-  // });
+  useQuery('tasks', getTasks, {
+    onSuccess: res => setTasks([...res.data]),
+  });
+  useQuery('statuses', getStatuses, {
+    onSuccess: res => setStatuses([...res.data]),
+  });
 
   return (
     <ChakraProvider>
-        <Flex alignItems="center" mt="5">
-          <ColorModeSwitcher />
-        </Flex>
-        <AddToDo />
-        <ToDoList />
+      <Flex alignItems="center" mt="5">
+        <ColorModeSwitcher />
+      </Flex>
+      <AddToDo />
+      <TodoList />
     </ChakraProvider>
   );
 }

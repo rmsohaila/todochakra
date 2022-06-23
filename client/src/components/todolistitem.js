@@ -1,17 +1,11 @@
 import React from 'react';
-import {
-  Text,
-  Checkbox,
-  Button,
-  useToast,
-  Box,
-  Flex,
-} from '@chakra-ui/react';
 import { useRecoilState } from 'recoil';
-import { tasksListState } from 'utils/atoms';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
+import { Text, Checkbox, Button, useToast, Box, Flex } from '@chakra-ui/react';
 
-function TodoListItem({ task, onEdit, onDelete }) {
+import { tasksListState } from 'utils';
+
+export const TodoListItem = ({ task, onEdit, onDelete }) => {
   const toast = useToast();
   const [tasks, setTasks] = useRecoilState(tasksListState);
 
@@ -84,6 +78,4 @@ function TodoListItem({ task, onEdit, onDelete }) {
       </Box>
     </Flex>
   );
-}
-
-export default TodoListItem;
+};
