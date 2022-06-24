@@ -1,25 +1,49 @@
 import React from 'react';
 import { useRecoilState } from 'recoil';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
-import { Text, Checkbox, Button, useToast, Box, Flex } from '@chakra-ui/react';
+import {
+  Text,
+  Checkbox,
+  Button,
+  useToast,
+  Box,
+  Flex,
+  useDisclosure,
+} from '@chakra-ui/react';
 
 import { tasksListState } from 'utils';
+import DeleteConfirmation from './deleteConfirmation';
 
-export const TodoListItem = ({ task, onEdit, onDelete }) => {
+export const TodoListItem = ({
+  task,
+  onMarkCompleted,
+  onItemEdit,
+  onItemDelete,
+}) => {
   const toast = useToast();
   const [tasks, setTasks] = useRecoilState(tasksListState);
 
   const markCompleted = () => {
     setTasks(
-      tasks.map(t => (t.id === task.id ? { ...t, completed: !t.completed } : t))
+      tasks.map(t => {
+        if (t.id === task.id) {
+          onMarkCompleted(t);
+          return { ...t, completed: !t.completed };
+        }
+        return t;
+      })
     );
-    toast({
-      title: 'Task marked as completed!',
-      status: 'success',
-      duration: 1000,
-      isClosable: true,
-    });
+
+    
   };
+
+  // const onDelete = task => {
+  //   return <DeleteConfirmation
+  //     title="Are you sure"
+  //     content={'Do you want to remove task' + task.title}
+  //     onCloseHandler={ v => console.log('from alert dialog: ', v)}
+  //   />
+  // };
 
   return (
     <Flex mb="2">
@@ -60,7 +84,7 @@ export const TodoListItem = ({ task, onEdit, onDelete }) => {
           rounded="full"
           disabled={!!task.completed}
           colorScheme="teal"
-          onClick={() => onEdit(task)}
+          onClick={() => onItemEdit(task)}
           p="0"
         >
           <FaPencilAlt height="16px" width="16px" />
@@ -70,7 +94,7 @@ export const TodoListItem = ({ task, onEdit, onDelete }) => {
           ml="2"
           disabled={task.completed}
           colorScheme="red"
-          onClick={() => onDelete(task)}
+          onClick={() => onItemDelete(task)}
           p="0"
         >
           <FaTrashAlt />

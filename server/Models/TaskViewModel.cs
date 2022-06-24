@@ -8,6 +8,7 @@
         public string Description { get; set; }
 
         public StatusViewModel Status { get; set; }
+        public bool Completed { get; set; }
 
         public DateTime LastModifiedAt { get; set; }
     }

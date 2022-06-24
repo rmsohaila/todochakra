@@ -10,9 +10,13 @@ export const createTask = async task => {
 };
 
 export const updateTask = async task => {
-  return api.put(TASK_URL + task.id, task);
+  return api.put(`${TASK_URL}/${task.TaskId}`, task);
 };
 
 export const deleteTask = async task => {
-  return api.delete(TASK_URL + task.id);
+  return api.delete(`${TASK_URL}/${task.id}`);
 };
+
+export const markTaskAsCompleted = async (obj) => {
+  return api.put(`${TASK_URL}/${obj.taskId}/${obj.statusId}`)
+}

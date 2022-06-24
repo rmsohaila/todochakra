@@ -37,6 +37,7 @@ namespace EdwardTodoAPI.Controllers
                     Title = task.Title,
                     Description = task.Description,
                     Status = new StatusViewModel { Id = task.StatusId, Title = task.Status.Title },
+                    Completed = task.Status.Title.Contains("Complete"),
                     LastModifiedAt = task.UpdatedDate > task.CreatedDate ? task.UpdatedDate : task.CreatedDate,
                 });
             }

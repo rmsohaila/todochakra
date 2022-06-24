@@ -26,12 +26,10 @@ export const AddToDo = () => {
   const isMutating = useIsMutating();
 
   const createMutation = useMutation(createTask, response => {
-    console.log('createMutate: ', response);
     queryClient.invalidateQueries('tasks');
     //
   });
   const updateMutation = useMutation(updateTask, response => {
-    console.log('updateMutate: ', response);
     queryClient.invalidateQueries('tasks');
   });
   const submitHandler = async (values, { setSubmitting, resetForm }) => {
@@ -57,7 +55,6 @@ export const AddToDo = () => {
         Description: values.description,
         StatusId: values.status,
       };
-      console.log('updateTask: ', updateTask);
       await updateMutation.mutateAsync(updateTask);
       setTaskForEdit({});
       toast({
@@ -78,10 +75,6 @@ export const AddToDo = () => {
     [statuses]
   );
 
-  React.useEffect(
-    () => console.info('taskforedit', taskForEdit),
-    [taskForEdit]
-  );
   // Formik initial value
   const initValues =
     Object.keys(taskForEdit).length > 0

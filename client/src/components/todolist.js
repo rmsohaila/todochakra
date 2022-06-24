@@ -8,22 +8,49 @@ import {
   Spacer,
   Switch,
   HStack,
+  useToast,
+  useDisclosure,
 } from '@chakra-ui/react';
 import {
   taskForEditState,
   filteredTasks,
   filterState,
   taskListStatsState,
+  statusState,
 } from 'utils';
 import { TodoListItem } from 'components';
-import { useIsFetching } from 'react-query';
+import { useIsFetching, useMutation, useQueryClient } from 'react-query';
+import { deleteTask, markTaskAsCompleted } from 'api';
 
 export const TodoList = () => {
   const [filter, setFilter] = useRecoilState(filterState);
+  const statuses = useRecoilValue(statusState);
   const setTaskForEdit = useSetRecoilState(taskForEditState);
   const taskListStats = useRecoilValue(taskListStatsState);
-  const [tasks, setTasks] = useRecoilState(filteredTasks);
+  const tasks = useRecoilValue(filteredTasks);
   const isLoading = useIsFetching();
+
+  const queryClient = useQueryClient();
+  const mutateDelete = useMutation(deleteTask);
+  const mutateTaskStatus = useMutation(markTaskAsCompleted);
+
+  const toast = useToast();
+
+  const onMarkCompleted = task => {
+    mutateTaskStatus
+      .mutateAsync({
+        taskId: task.id,
+        statusId: statuses.find(s => s.title === 'Completed').id,
+      })
+      .then(res => {
+        toast({
+          title: 'Task marked as completed!',
+          status: 'success',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+  };
 
   const onEditHandler = task => {
     if (!task) return;
@@ -31,7 +58,18 @@ export const TodoList = () => {
   };
   const onDeleteHandler = task => {
     if (!task) return;
-    setTasks(tasks.filter(t => t.id !== task.id));
+    if (window.confirm('Are you sure to delete the task?')) {
+      mutateDelete.mutateAsync(task).then(res => {
+        queryClient.invalidateQueries('tasks');
+
+        toast({
+          title: 'Task Deleted.',
+          status: 'success',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+    }
   };
 
   const showCompletedTasks = () => {
@@ -69,16 +107,16 @@ export const TodoList = () => {
 
       {isLoading > 0 && <Text align="center">Working...</Text>}
       {!isLoading && tasks.length === 0 && <Text align="center">No tasks</Text>}
-      {!isLoading &&
-        tasks &&
+      {tasks &&
         tasks.length > 0 &&
         tasks.map((t, i) => {
           return (
             <TodoListItem
               key={i}
               task={t}
-              onEdit={onEditHandler}
-              onDelete={onDeleteHandler}
+              onMarkCompleted={onMarkCompleted}
+              onItemEdit={onEditHandler}
+              onItemDelete={onDeleteHandler}
             />
           );
         })}
